@@ -8,6 +8,6 @@ package crs.model;
  *
  * @author ahmed
  */
-public class Enrollement {
+public class Enrollment {
     
 }
