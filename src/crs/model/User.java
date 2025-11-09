@@ -8,9 +8,6 @@ package crs.model;
  *
  * @author ahmed
  */
-public class TestModel {
-    public static void main(String[]args){
-        System.out.println("CR controller test work!");
-    }
+public class User {
     
 }
