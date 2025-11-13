@@ -1,20 +1,26 @@
 package crs.model;
 
-public class Course {
+public class Assessment {
 
     private String courseId;
     private String courseName;
     private int credits;
     private String semester;
     private String instructor;
+    private int examWeight;
+    private int assignmentWeight;
 
-    public Course(String courseId, String courseName, int credits,
-                  String semester, String instructor) {
+    public Assessment(String courseId, String courseName, int credits,
+                      String semester, String instructor,
+                      int examWeight, int assignmentWeight) {
+
         this.courseId = courseId;
         this.courseName = courseName;
         this.credits = credits;
         this.semester = semester;
         this.instructor = instructor;
+        this.examWeight = examWeight;
+        this.assignmentWeight = assignmentWeight;
     }
 
     // ---------------------
@@ -58,6 +64,22 @@ public class Course {
 
     public void setInstructor(String instructor) {
         this.instructor = instructor;
+    }
+
+    public int getExamWeight() {
+        return examWeight;
+    }
+
+    public void setExamWeight(int examWeight) {
+        this.examWeight = examWeight;
+    }
+
+    public int getAssignmentWeight() {
+        return assignmentWeight;
+    }
+
+    public void setAssignmentWeight(int assignmentWeight) {
+        this.assignmentWeight = assignmentWeight;
     }
 
     @Override
