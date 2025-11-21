@@ -24,12 +24,12 @@ public class PdfGenerator {
             PdfWriter.getInstance(doc, new FileOutputStream(path));
             doc.open();
 
-            // Title
+            // title of the pdf fonts, etc
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
             doc.add(new Paragraph("Academic Performance Report", titleFont));
             doc.add(new Paragraph(" "));
 
-            // Student Info
+            // Student informationnnnn
             doc.add(new Paragraph("Student Name : " +
                     report.getStudent().getFirstName() + " " +
                     report.getStudent().getLastName()));
@@ -40,7 +40,7 @@ public class PdfGenerator {
             doc.add(new Paragraph("Semester     : " + report.getSemester()));
             doc.add(new Paragraph(" "));
 
-            // Table Header
+            // Table headerrrr
             PdfPTable table = new PdfPTable(5);
             table.addCell("Course Code");
             table.addCell("Course Title");
@@ -59,7 +59,7 @@ public class PdfGenerator {
             doc.add(table);
             doc.add(new Paragraph(" "));
 
-            // CGPA
+            // gradess
             doc.add(new Paragraph("GPA  : " + report.getGpa()));
             doc.add(new Paragraph("CGPA : " + report.getCgpa()));
 
