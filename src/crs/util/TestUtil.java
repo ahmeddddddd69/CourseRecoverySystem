@@ -22,7 +22,7 @@ public class TestUtil {
         
 
         //testLoadStudents();
-        // testLoadCourses();
+        //testLoadCourses();
         // testPdfGeneration();
         // testEmailSending();
         // testDateHelper();
@@ -36,7 +36,7 @@ public class TestUtil {
     public static void testLoadStudents() {
         System.out.println("=== TEST: Loading Students ===");
 
-        ArrayList<Student> list = StudentDataHelper.loadStudents("src/data/student_information.csv");
+        ArrayList<Student> list = StudentDataHelper.loadStudents("data/student_information.csv");
 
         for (Student s : list) {
             System.out.println(s.getStudentId() + " - " + s.getFirstName() + " " + s.getLastName());
@@ -49,7 +49,7 @@ public class TestUtil {
     public static void testLoadCourses() {
         System.out.println("=== TEST: Loading Course Assessments ===");
 
-        ArrayList<Assessment> list = CourseDataHelper.loadAssessments("src/data/course_assessment_information.csv");
+        ArrayList<Assessment> list = CourseDataHelper.loadAssessments("data/course_assessment_information.csv");
 
         for (Assessment a : list) {
             System.out.println(a.getCourseId() + " - " + a.getCourseName() + 
