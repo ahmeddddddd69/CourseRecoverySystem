@@ -4,22 +4,15 @@ import crs.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserController {
+public class UserController1 {
     private List<User> users;
     
-    public UserController() {
+    public UserController1() {
         this.users = new ArrayList<>();
-        
-        users.add(new User("admin", "admin123", "administrator"));
     }
     
-    public boolean addUser(String username, String password, String role) {
-        if (getUser(username) != null) {
-            return false; 
-        }
-        User user = new User(username, password, role);
+    public void addExistingUser(User user) {
         users.add(user);
-        return true;
     }
     
     public User getUser(String username) {
@@ -34,9 +27,5 @@ public class UserController {
     public boolean validateUser(String username, String password) {
         User user = getUser(username);
         return user != null && user.getPassword().equals(password);
-    }
-    
-    public List<User> getAllUsers() {
-        return new ArrayList<>(users);
     }
 }
