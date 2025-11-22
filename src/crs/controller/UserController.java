@@ -9,13 +9,13 @@ public class UserController {
     
     public UserController() {
         this.users = new ArrayList<>();
-        // Default admin user
+        
         users.add(new User("admin", "admin123", "administrator"));
     }
     
     public boolean addUser(String username, String password, String role) {
         if (getUser(username) != null) {
-            return false; // User exists
+            return false; 
         }
         User user = new User(username, password, role);
         users.add(user);

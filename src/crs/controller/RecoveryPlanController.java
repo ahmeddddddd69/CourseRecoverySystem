@@ -27,11 +27,10 @@ public class RecoveryPlanController {
         return result;
     }
     
-    // REMOVED the updatePlanStatus method since setStatus doesn't exist
-    // Or keep it but remove the setStatus line:
+    
     public boolean updatePlanStatus(String studentId, String courseCode, String status) {
         RecoveryPlan plan = getRecoveryPlan(studentId, courseCode);
-        return plan != null; // Just check if plan exists
+        return plan != null; 
     }
     
     private RecoveryPlan getRecoveryPlan(String studentId, String courseCode) {
