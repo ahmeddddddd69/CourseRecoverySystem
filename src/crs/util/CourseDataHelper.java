@@ -23,7 +23,7 @@ public class CourseDataHelper {
 
             if (t.length >= 7) {
                 Assessment a = new Assessment(
-                        t[0].trim(),               // CourseID
+                        t[0].trim(),               // CourseID  i thinkkk
                         t[1].trim(),               // CourseName
                         Integer.parseInt(t[2].trim()), // Credits
                         t[3].trim(),               // Semester

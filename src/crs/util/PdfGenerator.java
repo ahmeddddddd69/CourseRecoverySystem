@@ -24,12 +24,12 @@ public class PdfGenerator {
             PdfWriter.getInstance(doc, new FileOutputStream(path));
             doc.open();
 
-            // Title
+            // Title pdf
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
             doc.add(new Paragraph("Academic Performance Report", titleFont));
             doc.add(new Paragraph(" "));
 
-            // Student Info
+            // Student Info will need to add grade 
             doc.add(new Paragraph("Student Name : " +
                     report.getStudent().getFirstName() + " " +
                     report.getStudent().getLastName()));
@@ -40,7 +40,7 @@ public class PdfGenerator {
             doc.add(new Paragraph("Semester     : " + report.getSemester()));
             doc.add(new Paragraph(" "));
 
-            // Table Header
+            // Table Header obv for the pdf
             PdfPTable table = new PdfPTable(5);
             table.addCell("Course Code");
             table.addCell("Course Title");
@@ -59,43 +59,7 @@ public class PdfGenerator {
             doc.add(table);
             doc.add(new Paragraph(" "));
 
-            // CGPA
-            // title of the pdf fonts, etc
-            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-            doc.add(new Paragraph("Academic Performance Report", titleFont));
-            doc.add(new Paragraph(" "));
-
-            // Student informationnnnn
-            doc.add(new Paragraph("Student Name : " +
-                    report.getStudent().getFirstName() + " " +
-                    report.getStudent().getLastName()));
-            doc.add(new Paragraph("Student ID   : " +
-                    report.getStudent().getStudentId()));
-            doc.add(new Paragraph("Program      : " +
-                    report.getStudent().getMajor()));
-            doc.add(new Paragraph("Semester     : " + report.getSemester()));
-            doc.add(new Paragraph(" "));
-
-            // Table headerrrr
-            PdfPTable table = new PdfPTable(5);
-            table.addCell("Course Code");
-            table.addCell("Course Title");
-            table.addCell("Credit Hours");
-            table.addCell("Grade");
-            table.addCell("Grade Point");
-
-            for (Course c : report.getCourses()) {
-                table.addCell(c.getCourseId());
-                table.addCell(c.getCourseName());
-                table.addCell(String.valueOf(c.getCredits()));
-                table.addCell("N/A");         // Grades can be added later
-                table.addCell("N/A");         // GP calculation optional
-            }
-
-            doc.add(table);
-            doc.add(new Paragraph(" "));
-
-            // gradess
+            // gradess cgpa and gpa
             doc.add(new Paragraph("GPA  : " + report.getGpa()));
             doc.add(new Paragraph("CGPA : " + report.getCgpa()));
 
