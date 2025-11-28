@@ -23,11 +23,11 @@ public class TestUtil {
 
         //testLoadStudents();
         //testLoadCourses();
-        // testPdfGeneration();
-        // testEmailSending();
+        //testPdfGeneration();
+        //testEmailSending();
         // testDateHelper();
         // testValidation();
-        // testPdfPathHelper();
+         testPdfPathHelper();
     }
 
     // ----------------------------------------------------------
