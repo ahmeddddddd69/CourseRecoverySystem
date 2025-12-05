@@ -14,7 +14,15 @@ public class AcademicReport {
         this.cgpa = cgpa;
     }
 
-    public Student getStudent() { return student; }
-    public List<Grade> getGrades() { return grades; }
-    public double getCgpa() { return cgpa; }
+    public Student getStudent() { 
+        return student; 
+    }
+
+    public List<Grade> getGrades() { 
+        return grades; 
+    }
+
+    public double getCgpa() { 
+        return cgpa; 
+    }
 }
