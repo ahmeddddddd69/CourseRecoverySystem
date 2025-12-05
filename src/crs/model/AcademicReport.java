@@ -1,30 +1,20 @@
 package crs.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class AcademicReport {
 
     private Student student;
-    private String semester;
-    private ArrayList<Course> courses = new ArrayList<>();
-    private double gpa;
+    private List<Grade> grades;
     private double cgpa;
 
-    public AcademicReport(Student student, String semester) {
+    public AcademicReport(Student student, List<Grade> grades, double cgpa) {
         this.student = student;
-        this.semester = semester;
+        this.grades = grades;
+        this.cgpa = cgpa;
     }
 
-    public void addCourse(Course c) { courses.add(c); }
-
-    // Setters
-    public void setGpa(double gpa) { this.gpa = gpa; }
-    public void setCgpa(double cgpa) { this.cgpa = cgpa; }
-
-    // Getters
     public Student getStudent() { return student; }
-    public String getSemester() { return semester; }
-    public ArrayList<Course> getCourses() { return courses; }
-    public double getGpa() { return gpa; }
+    public List<Grade> getGrades() { return grades; }
     public double getCgpa() { return cgpa; }
 }
