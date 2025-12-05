@@ -1,16 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package crs.util;
+
 import java.io.*;
 import java.util.*;
-/**
- *
- * @author ejaz
- */
+
 public class FileHelper {
-     public static List<String> readLines(String path) {
+
+    // -------------------------
+    // 1. Read entire file (your original)
+    // -------------------------
+    public static List<String> readLines(String path) {
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
@@ -23,6 +21,9 @@ public class FileHelper {
         return lines;
     }
 
+    // -------------------------
+    // 2. Write a line (your original)
+    // -------------------------
     public static void writeLine(String path, String data) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(path, true))) {
             bw.write(data);
@@ -31,5 +32,35 @@ public class FileHelper {
             System.out.println("Error writing to file: " + e.getMessage());
         }
     }
-    
+
+    // -------------------------
+    // 3. NEW : CSV READER (Required by CourseDataHelper, GradeDataHelper)
+    // -------------------------
+    public static List<String[]> readCSV(String path) {
+        List<String[]> rows = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+
+            String line;
+            boolean skipHeader = true;
+
+            while ((line = br.readLine()) != null) {
+
+                // Skip header row
+                if (skipHeader) {
+                    skipHeader = false;
+                    continue;
+                }
+
+                if (line.trim().isEmpty()) continue;
+
+                // Split CSV into array
+                rows.add(line.split(","));
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading CSV: " + path + " → " + e.getMessage());
+        }
+
+        return rows;
+    }
 }

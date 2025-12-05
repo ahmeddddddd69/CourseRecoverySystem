@@ -1,40 +1,30 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package crs.util;
-import crs.model.Assessment;
+
+import crs.model.Course;
 import java.util.ArrayList;
 import java.util.List;
-/**
- *
- * @author ejaz
- */
+
 public class CourseDataHelper {
-    public static ArrayList<Assessment> loadAssessments(String path) {
 
-        ArrayList<Assessment> list = new ArrayList<>();
+    public static ArrayList<Course> loadCourses(String path) {
 
-        List<String> lines = FileHelper.readLines(path);
+        ArrayList<Course> courses = new ArrayList<>();
+        List<String[]> rows = FileHelper.readCSV(path);
 
-        // Skip header
-        for (int i = 1; i < lines.size(); i++) {
-            String[] t = lines.get(i).split(",");
+        for (String[] r : rows) {
+            if (r.length < 7) continue;
 
-            if (t.length >= 7) {
-                Assessment a = new Assessment(
-                        t[0].trim(),               // CourseID  i thinkkk
-                        t[1].trim(),               // CourseName
-                        Integer.parseInt(t[2].trim()), // Credits
-                        t[3].trim(),               // Semester
-                        t[4].trim(),               // Instructor
-                        Integer.parseInt(t[5].trim()), // ExamWeight
-                        Integer.parseInt(t[6].trim())  // AssignmentWeight
-                );
-                list.add(a);
-            }
+            courses.add(new Course(
+                    r[0].trim(),                     // CourseID
+                    r[1].trim(),                     // CourseName
+                    Integer.parseInt(r[2].trim()),   // Credits
+                    r[3].trim(),                     // Semester
+                    r[4].trim(),                     // Instructor
+                    Integer.parseInt(r[5].trim()),   // ExamWeight
+                    Integer.parseInt(r[6].trim())    // Assignment Weight
+            ));
         }
 
-        return list;
+        return courses;
     }
 }
