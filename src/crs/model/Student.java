@@ -3,7 +3,7 @@ package crs.model;
 public class Student {
 
     // Fields (match your CSV)
-    private String studentId;
+    public String studentId;
     private String firstName;
     private String lastName;
     private String major;

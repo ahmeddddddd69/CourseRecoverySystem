@@ -4,30 +4,60 @@
  */
 package crs.controller;
 
+import crs.model.Course;
+import crs.model.Grade;
 import java.util.List;
 import java.util.ArrayList;
 import crs.model.Student;
 import crs.util.StudentDataHelper;
+import crs.util.CourseDataHelper;
+import crs.util.GradeDataHelper;
+import crs.util.CgpaHelper;
 
 public class EnrollmentController {
 
-    private StudentDataHelper studentDataHelper;
-
-    public EnrollmentController() {
-        this.studentDataHelper = new StudentDataHelper();
-    }
-
-    /**
-     * Check if the student meets the progression rules:
-     * CGPA >= 2.0
-     * Failed courses <= 3
-     */
     public boolean isEligible(Student student) {
         if (student == null) {
             return false;
         }
+        
+        
+            // Load courses and grades from helpers
+            ArrayList<Course> allCourses = CourseDataHelper.loadCourses("");
+            ArrayList<Grade> allGrades = GradeDataHelper.loadGrades("");
+            
 
-        double cgpa = calculateCGPA(student);
+            if (allCourses == null || allCourses.isEmpty()) {
+                System.out.println("No course data found.");
+                return false;
+            }
+
+            if (allGrades == null || allGrades.isEmpty()) {
+                System.out.println("No grade data found.");
+                return false;
+            }
+
+            // Add student's courses into the report
+            ArrayList<Course> studentCourses = new ArrayList<>();
+            ArrayList<Grade> studentGrades = new ArrayList<>();
+
+            for (Grade g : allGrades) {
+                if (g.getStudentId().equals(student.getStudentId())) {
+                    studentGrades.add(g);
+                    for (Course c : allCourses) {
+                        if (c.getCourseId().equals(g.getCourseId())) {
+
+                            if (!studentCourses.contains(c)) {
+                                studentCourses.add(c);
+                            }
+
+                        }
+                    }
+                }
+            }
+        
+
+        double cgpa = CgpaHelper.calculateCgpa(student.studentId, studentGrades, studentCourses);
         int failedCourses = getFailedCourseCount(student);
 
         return cgpa >= 2.0 && failedCourses <= 3;
@@ -37,8 +67,8 @@ public class EnrollmentController {
      * Returns all students who are NOT eligible to progress.
      */
     public List<Student> getStudentsNotEligible() {
-        /*List<Student> students = studentDataHelper.loadAllStudents(); (A recommended function to add to the student data helper util */
         List<Student> result = new ArrayList<>();
+        ArrayList<Student> students = StudentDataHelper.loadStudents("");
 
         for (Student s : students) {
             if (!isEligible(s)) {

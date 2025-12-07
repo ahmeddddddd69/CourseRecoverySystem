@@ -60,7 +60,6 @@ public class PdfGenerator {
             doc.add(new Paragraph(" "));
 
             // gradess cgpa and gpa
-            doc.add(new Paragraph("GPA  : " + report.getGpa()));
             doc.add(new Paragraph("CGPA : " + report.getCgpa()));
 
             doc.close();

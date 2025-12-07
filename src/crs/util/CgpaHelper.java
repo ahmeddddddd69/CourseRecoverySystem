@@ -6,10 +6,7 @@ import java.util.ArrayList;
 
 public class CgpaHelper {
 
-    /**
-     * Computes CGPA using:
-     *   CGPA = Total(gradePoint × credits) / TotalCredits
-     */
+    
     public static double calculateCgpa(String studentId,
                                        ArrayList<Grade> grades,
                                        ArrayList<Course> courses) {
