@@ -11,14 +11,31 @@ public class LoginController {
     }
     
     public boolean login(String username, String password) {
-        if (userController1.validateUser(username, password)) {
-            currentUser = userController1.getUser(username);
-            return true;
+        User u = userController1.getUser(username);
+
+        if (u != null && u.password.equals(password)) {
+            
+            if (u.isActive) {
+                currentUser = u;
+                userController1.updateLoginTime(u);
+                
+                
+                System.out.println("[LOG] Login Success: " + username);
+                return true;
+            } else {
+                System.out.println("[LOG] Login Failed: Account is blocked/inactive.");
+            }
+        } else {
+            System.out.println("[LOG] Login Failed: Invalid username or password.");
         }
+        
         return false;
     }
     
     public void logout() {
+        if (currentUser != null) {
+            System.out.println("[LOG] Logout: " + currentUser.username);
+        }
         currentUser = null;
     }
     
