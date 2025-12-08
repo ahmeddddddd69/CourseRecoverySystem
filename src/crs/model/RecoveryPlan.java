@@ -39,6 +39,11 @@ public class RecoveryPlan {
         return status;
     }
 
+    // ⭐ FIX: Add this method so the controller can update status
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     // ------------------------
     // Basic Info
     // ------------------------

@@ -2,10 +2,11 @@ package crs.model;
 
 public class AcademicOfficer extends User {
 
-    public AcademicOfficer(String userId, String name, String email,
-                           String username, String password) {
+    public AcademicOfficer(String username, String password,
+                           String lastLoginBinary, String lastLogoutBinary) {
 
-        super(userId, name, email, username, password, "Academic Officer");
+        super(username, password, "AcademicOfficer",
+              lastLoginBinary, lastLogoutBinary);
     }
 
     @Override

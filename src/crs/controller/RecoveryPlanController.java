@@ -1,26 +1,38 @@
 package crs.controller;
 
 import crs.model.RecoveryPlan;
+import crs.model.RecoveryTask;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
 public class RecoveryPlanController {
-    private List<RecoveryPlan> recoveryPlans;
+
     private final String FILE_NAME = "recovery_plans.txt";
-    
+    private List<RecoveryPlan> recoveryPlans = new ArrayList<>();
+
     public RecoveryPlanController() {
-        this.recoveryPlans = new ArrayList<>();
         loadFromFile();
     }
-    
+
+    // ========================================================
+    // CREATE RECOVERY PLAN (ATTEMPT STARTS AT 1)
+    // ========================================================
     public boolean createRecoveryPlan(String studentId, String courseCode) {
+
+        // Prevent duplicates
+        RecoveryPlan existing = getRecoveryPlan(studentId, courseCode);
+        if (existing != null) return false;
+
         RecoveryPlan plan = new RecoveryPlan(studentId, courseCode);
         recoveryPlans.add(plan);
         saveToFile();
         return true;
     }
-    
+
+    // ========================================================
+    // GET ALL PLANS FOR A STUDENT
+    // ========================================================
     public List<RecoveryPlan> getRecoveryPlansByStudent(String studentId) {
         List<RecoveryPlan> result = new ArrayList<>();
         for (RecoveryPlan plan : recoveryPlans) {
@@ -30,60 +42,136 @@ public class RecoveryPlanController {
         }
         return result;
     }
-    
+
+    // ========================================================
+    // UPDATE PLAN STATUS
+    // ========================================================
     public boolean updatePlanStatus(String studentId, String courseCode, String status) {
         RecoveryPlan plan = getRecoveryPlan(studentId, courseCode);
         if (plan != null) {
-            plan.setStatus(status);
+            if (status.equalsIgnoreCase("Completed"))
+                plan.completePlan();
+            else
+                plan.setStatus(status);
+
             saveToFile();
             return true;
         }
-        return false; 
+        return false;
     }
-    
+
+    // ========================================================
+    // ADD TASK TO A PLAN
+    // ========================================================
+    public boolean addTask(String studentId, String courseCode, int week, String description) {
+        RecoveryPlan plan = getRecoveryPlan(studentId, courseCode);
+        if (plan == null) return false;
+
+        plan.addTask(new RecoveryTask(week, description));
+        saveToFile();
+        return true;
+    }
+
+    // ========================================================
+    // INCREMENT ATTEMPT (MAX 3)
+    // ========================================================
+    public boolean incrementPlanAttempt(String studentId, String courseCode) {
+        RecoveryPlan plan = getRecoveryPlan(studentId, courseCode);
+        if (plan == null) return false;
+
+        plan.incrementAttempt();
+        saveToFile();
+        return true;
+    }
+
+    // ========================================================
+    // GET PLAN
+    // ========================================================
     private RecoveryPlan getRecoveryPlan(String studentId, String courseCode) {
         for (RecoveryPlan plan : recoveryPlans) {
-            if (plan.getStudentId().equals(studentId) && plan.getCourseCode().equals(courseCode)) {
+            if (plan.getStudentId().equals(studentId) &&
+                plan.getCourseCode().equals(courseCode)) {
                 return plan;
             }
         }
         return null;
     }
 
+    // ========================================================
+    // SAVE FULL PLAN DATA
+    // (FORMAT: studentId,courseCode,status,attempt,taskCount,task1Week|task1Desc|task1Status;task2... )
+    // ========================================================
     private void saveToFile() {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+
             for (RecoveryPlan plan : recoveryPlans) {
-                String line = plan.getStudentId() + "," + 
-                              plan.getCourseCode() + "," + 
-                              plan.getStatus();
+
+                StringBuilder tasksData = new StringBuilder();
+                for (RecoveryTask t : plan.getTasks()) {
+                    tasksData.append(t.getWeek()).append("|")
+                             .append(t.getDescription()).append("|")
+                             .append(t.getStatus()).append(";");
+                }
+
+                String line = plan.getStudentId() + "," +
+                              plan.getCourseCode() + "," +
+                              plan.getStatus() + "," +
+                              plan.getAttemptCount() + "," +
+                              tasksData;
+
                 writer.write(line);
                 writer.newLine();
             }
-            writer.close();
+
         } catch (IOException e) {
-            System.out.println("Error saving file: " + e.getMessage());
+            System.out.println("Error saving recovery plans: " + e.getMessage());
         }
     }
 
+    // ========================================================
+    // LOAD FULL PLAN DATA BACK INTO OBJECTS
+    // ========================================================
     private void loadFromFile() {
-        try {
-            File file = new File(FILE_NAME);
-            if (!file.exists()) return;
+        File file = new File(FILE_NAME);
+        if (!file.exists()) return;
 
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    RecoveryPlan plan = new RecoveryPlan(parts[0], parts[1]);
-                    plan.setStatus(parts[2]);
+                String[] p = line.split(",", 5);
+
+                if (p.length >= 4) {
+                    RecoveryPlan plan = new RecoveryPlan(p[0], p[1]);
+                    plan.setStatus(p[2]);
+                    plan.incrementAttempt();  // attempt starts at 1, so set proper count
+                    int attempt = Integer.parseInt(p[3]);
+                    while (plan.getAttemptCount() < attempt)
+                        plan.incrementAttempt();
+
+                    // Load tasks
+                    if (p.length == 5 && !p[4].isEmpty()) {
+                        String[] tasksArr = p[4].split(";");
+                        for (String t : tasksArr) {
+                            if (t.trim().isEmpty()) continue;
+
+                            String[] taskParts = t.split("\\|");
+                            int week = Integer.parseInt(taskParts[0]);
+                            String desc = taskParts[1];
+                            String status = taskParts[2];
+
+                            RecoveryTask task = new RecoveryTask(week, desc);
+                            task.setStatus(status);
+                            plan.addTask(task);
+                        }
+                    }
+
                     recoveryPlans.add(plan);
                 }
             }
-            reader.close();
+
         } catch (IOException e) {
-            System.out.println("Error loading file: " + e.getMessage());
+            System.out.println("Error loading recovery plans: " + e.getMessage());
         }
     }
 }

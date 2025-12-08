@@ -1,101 +1,87 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package crs.controller;
 
-import crs.model.AcademicReport;
-import crs.model.Course;
-import crs.model.Student;
-import crs.model.Grade;
+import crs.model.*;
+import crs.util.*;
 
-import crs.util.PdfGenerator;
-import crs.util.CgpaHelper;
-import crs.util.CourseDataHelper;
-import crs.util.GradeDataHelper;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AcademicReportController {
 
     public AcademicReportController() {}
 
-    
-    
     public boolean generateReport(Student student, String semester, int year) {
 
         if (student == null) {
-            System.out.println("Student is null.");
+            System.out.println("[ERROR] Student is null.");
             return false;
         }
 
-        try {
-            // Load courses and grades from helpers
-            ArrayList<Course> allCourses = CourseDataHelper.loadCourses("");
-            ArrayList<Grade> allGrades = GradeDataHelper.loadGrades("");
-            
+        // 1. Load all courses
+        ArrayList<Course> allCourses = CourseDataHelper.loadCourses("course_assessment_information.csv");
 
-            if (allCourses == null || allCourses.isEmpty()) {
-                System.out.println("No course data found.");
-                return false;
+        // 2. Load all grades
+        ArrayList<Grade> allGrades = GradeDataHelper.loadGrades("student_course_grades.csv");
+
+        if (allCourses == null || allCourses.isEmpty()) {
+            System.out.println("[ERROR] No course data found.");
+            return false;
+        }
+
+        if (allGrades == null || allGrades.isEmpty()) {
+            System.out.println("[ERROR] No grade data found.");
+            return false;
+        }
+
+        // 3. Filter grades for this student
+        List<Grade> studentGrades = new ArrayList<>();
+        for (Grade g : allGrades) {
+            if (g.getStudentId().equals(student.getStudentId())) {
+                studentGrades.add(g);
             }
+        }
 
-            if (allGrades == null || allGrades.isEmpty()) {
-                System.out.println("No grade data found.");
-                return false;
-            }
-
-            // Add student's courses into the report
-            List<Course> studentCourses = new ArrayList<>();
-            List<Grade> studentGrades = new ArrayList<>();
-
-            for (Grade g : allGrades) {
-                if (g.getStudentId().equals(student.getStudentId())) {
-                    studentGrades.add(g);
-                    for (Course c : allCourses) {
-                        if (c.getCourseId().equals(g.getCourseId())) {
-
-                            if (!studentCourses.contains(c)) {
-                                studentCourses.add(c);
-                            }
-
-                        }
+        // 4. Get courses the student has taken
+        List<Course> studentCourses = new ArrayList<>();
+        for (Grade g : studentGrades) {
+            for (Course c : allCourses) {
+                if (c.getCourseId().equals(g.getCourseId())) {
+                    if (!studentCourses.contains(c)) {
+                        studentCourses.add(c);
                     }
                 }
             }
-
-            // Create AcademicReport object
-            AcademicReport report = new AcademicReport(student, semester, year, studentCourses, studentGrades, 0);
-            //Calculate CGPA 
-            double cgpa = CgpaHelper.calculateCgpa(
-                    student.getStudentId(),
-                    allGrades,
-                    allCourses
-            );
-
-            report.setCgpa(cgpa);
-
-            // Call PDF Generator
-            PdfGenerator.generateAcademicReport(
-                    report,
-                    parseSemesterNumber(semester),
-                    year
-            );
-
-            System.out.println("Academic Report generated successfully for student " 
-                               + student.getStudentId());
-
-            return true;
-
-        } catch (Exception e) {
-            System.out.println("Report generation failed: " + e.getMessage());
-            return false;
         }
+
+        // 5. Calculate CGPA using your actual method
+        double cgpa = CgpaHelper.calculateCgpa(
+                student.getStudentId(),
+                allGrades,
+                allCourses
+        );
+
+        // 6. Create the report object
+        AcademicReport report = new AcademicReport(
+                student,
+                semester,
+                year,
+                studentCourses,
+                studentGrades,
+                cgpa
+        );
+
+        // 7. Generate PDF
+        PdfGenerator.generateAcademicReport(
+                report,
+                parseSemesterNumber(semester),
+                year
+        );
+
+        System.out.println("[SUCCESS] Academic Report generated for " + student.getStudentId());
+        return true;
     }
 
-    /**
-     * Extracts semester number from something like "Semester 2"
-     */
+    // Convert "Semester 1" → 1
     private int parseSemesterNumber(String semester) {
         String numeric = semester.replaceAll("[^0-9]", "");
         return Integer.parseInt(numeric);
