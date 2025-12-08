@@ -1,2 +1,2 @@
-admin,admin123,AcademicOfficer
-coordinator,coord123,CourseAdministrator
+admin,admin123,AcademicOfficer,0,0
+coordinator,coord123,CourseAdministrator,0,0
