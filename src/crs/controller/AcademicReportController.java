@@ -17,50 +17,67 @@ public class AcademicReportController {
             return false;
         }
 
+        // --------------------------------------------
         // 1. Load all courses
-        ArrayList<Course> allCourses = CourseDataHelper.loadCourses("course_assessment_information.csv");
+        // --------------------------------------------
+        ArrayList<Course> allCourses =
+                CourseDataHelper.loadCourses("course_assessment_information.csv");
 
+        // --------------------------------------------
         // 2. Load all grades
-        ArrayList<Grade> allGrades = GradeDataHelper.loadGrades("student_course_grades.csv");
+        // --------------------------------------------
+        ArrayList<Grade> allGrades =
+                GradeDataHelper.loadGrades("student_course_grades.csv");
 
-        if (allCourses == null || allCourses.isEmpty()) {
+        if (allCourses.isEmpty()) {
             System.out.println("[ERROR] No course data found.");
             return false;
         }
 
-        if (allGrades == null || allGrades.isEmpty()) {
+        if (allGrades.isEmpty()) {
             System.out.println("[ERROR] No grade data found.");
             return false;
         }
 
-        // 3. Filter grades for this student
+        // --------------------------------------------
+        // 3. Filter grades for THIS student
+        // --------------------------------------------
         List<Grade> studentGrades = new ArrayList<>();
         for (Grade g : allGrades) {
-            if (g.getStudentId().equals(student.getStudentId())) {
+            if (g.getStudentId().equalsIgnoreCase(student.getStudentId())) {
                 studentGrades.add(g);
             }
         }
 
-        // 4. Get courses the student has taken
+        // --------------------------------------------
+        // 4. Get courses this student took
+        // --------------------------------------------
         List<Course> studentCourses = new ArrayList<>();
         for (Grade g : studentGrades) {
             for (Course c : allCourses) {
-                if (c.getCourseId().equals(g.getCourseId())) {
+                if (c.getCourseId().equalsIgnoreCase(g.getCourseId())) {
+
                     if (!studentCourses.contains(c)) {
                         studentCourses.add(c);
                     }
+
                 }
             }
         }
 
-        // 5. Calculate CGPA using your actual method
+        // --------------------------------------------
+        // 5. Calculate CGPA FOR THIS STUDENT ONLY
+        //    (convert List → ArrayList to match method requirement)
+        // --------------------------------------------
         double cgpa = CgpaHelper.calculateCgpa(
                 student.getStudentId(),
-                allGrades,
-                allCourses
+                new ArrayList<>(studentGrades),     // FIXED TYPE
+                new ArrayList<>(studentCourses)     // FIXED TYPE
         );
 
-        // 6. Create the report object
+        // --------------------------------------------
+        // 6. Build the report object
+        // --------------------------------------------
         AcademicReport report = new AcademicReport(
                 student,
                 semester,
@@ -70,7 +87,9 @@ public class AcademicReportController {
                 cgpa
         );
 
+        // --------------------------------------------
         // 7. Generate PDF
+        // --------------------------------------------
         PdfGenerator.generateAcademicReport(
                 report,
                 parseSemesterNumber(semester),
@@ -81,7 +100,6 @@ public class AcademicReportController {
         return true;
     }
 
-    // Convert "Semester 1" → 1
     private int parseSemesterNumber(String semester) {
         String numeric = semester.replaceAll("[^0-9]", "");
         return Integer.parseInt(numeric);
